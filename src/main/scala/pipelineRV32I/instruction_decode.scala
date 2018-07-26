@@ -2,8 +2,7 @@ package pipelineRV32I
 
 
 import chisel3._
-import isRV32._
-
+import isRV32.Instructions._
 
 class rv32ID() extends Module(){
    val io = IO(new Bundle{
@@ -13,10 +12,10 @@ class rv32ID() extends Module(){
        val instrIn   = Input(UInt(32.W))
    })
 
-   reg1 = instrIn(15, 10)
-   reg2 = instrIn(24, 20)
+   io.reg1 := io.instrIn(15, 10)
+   io.reg2 := io.instrIn(24, 20)
    
-   when(instrIn(6, 0) === OPCODE_R_TYPE){
-       immidiate := 0.U
+   when(io.instrIn(6, 0) === OPCODE_R_TYPE){
+       io.immidiate := 0.U
    } 
 }

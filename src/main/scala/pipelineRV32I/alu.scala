@@ -10,57 +10,47 @@ class ALU32() extends Module(){
       val B     = Input(UInt(32.W))
       val res   = Output(UInt(32.W))
       //flags needed to be added
-   }
-
-   val negA := ~A + 1.U
-   val negB := ~B + 1.U
-   val resTemp := Wire(UInt(33.W))
+   })
    
+  
+   val A = io.A
+   val B = io.B
 
-   when(io.funct === Bits(b"0000000000")){
+
+   val resTemp = Wire(UInt(33.W))
+   resTemp := 0.U
+
+   when(io.funct === "b0000000000".U){
      //performs addition
      resTemp := A+B
-   }.elsewhen(io.funct === Bits(b"0100000000")){
+   }.elsewhen(io.funct === "b0100000000".U){
      //performs subtraction
-     resTemp := A+negB
-   }.elsewhen(io.funct === Bits(b"0000000001")){
-     //performs left logic shift
-     resTemp := A << B
-   }.elsewhen(io.funct === Bits(b"0000000010")){
+     resTemp := A-B
+   }.elsewhen(io.funct === "b0000000001".U){
+     //SLL
+     resTemp := A << B(4, 0)
+   }.elsewhen(io.funct === "b0000000010".U){
      //SLT
-     when(A(31) === 1.U && B(31) === 0.U){
-	resTemp := 1.U
-     }.elsewhen(A(31) === 1.U && B(31) === 1.U && negA < negB)){
-        resTemp := 0.U
-     }.elsewhen(A < B){
-   	resTemp := 1.U
-     }.otherwise{
- 	resTemp := 0.U
-     }
-   }.elsewhen(io.funct === Bits(b"0000000011")){
+     resTemp := A.asSInt < B.asSInt
+   }.elsewhen(io.funct === "b0000000011".U){
      //SLTU
-     when(A < B){
-        resTemp := 1.U
-     }.otherwise{
-        resTemp := 0.U
-     }
-   }.elsewhen(io.funct === Bits(b"0000000100")){
+     resTemp := A < B
+   }.elsewhen(io.funct === "b0000000100".U){
      //XOR
      resTemp := A ^ B
-   }.elsewhen(io.funct === Bits(b"0000000101")){
+   }.elsewhen(io.funct === "b0000000101".U){
      //SRL
-     resTemp := A >> B
-   }.elsewhen(io.funct === Bits(b"0100000101")){
+     resTemp := A >> B(4,0)
+   }.elsewhen(io.funct === "b0100000101".U){
      //SRA
-     resTemp(30, 0) := A >> B
-     resTemp(31) := A(31)
-   }.elsewhen(io.funct === Bits(b"0000000110")){
+     resTemp := (A.asSInt >> B(4,0)).asUInt
+   }.elsewhen(io.funct === "b0000000110".U){
      //OR
      resTemp := A | B
-   }.elsewhen(io.funct === Bits(b"0000000111"))
+   }.elsewhen(io.funct === "b0000000111".U){
      //AND
      resTemp := A & B
    }
    
-   res := resTemp(31, 0)
+   io.res := resTemp(31, 0)
 }
