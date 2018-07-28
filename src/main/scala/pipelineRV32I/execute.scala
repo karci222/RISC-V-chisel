@@ -23,8 +23,8 @@ class rv32EX() extends Module(){
    io.cond := 0.U
 
    alu.io.funct := io.funct
-   alu.io.A     := io.reg1
-   alu.io.B     := io.reg2
+   alu.io.A     := muxA
+   alu.io.B     := muxB
    io.res       := alu.io.res
 }
 

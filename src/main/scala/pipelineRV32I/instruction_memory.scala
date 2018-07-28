@@ -19,4 +19,3 @@ class ICacheSynth(n: Int = 1024) extends Module(){
        io.dataOut := mem.read(io.addrIn)
     }
 }
-
