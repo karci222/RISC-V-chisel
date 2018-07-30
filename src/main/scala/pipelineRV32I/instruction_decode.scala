@@ -28,13 +28,13 @@ class rv32ID() extends Module(){
        io.immidiate := 0.U
        io.funct := funct_temp
    }.elsewhen(io.instrIn(6,0) === OPCODE_STORE){
-       io.immidiate := Cat(io.instrIn(31,25), io.instrIn(11, 7))
+       io.immidiate := Cat(io.instrIn(31,25), io.instrIn(11, 7)).asSInt
        io.funct     := 0.U
    }.elsewhen(io.instrIn(6,0) === OPCODE_LOAD){
-       io.immidiate := io.instrIn(31, 20)
+       io.immidiate := io.instrIn(31, 20).asSInt
        io.funct     := 0.U
    }.elsewhen(io.instrIn(6,0) === OPCODE_I_TYPE){
        io.funct := Cat(0.U(7.W), funct3)
-       io.immidiate := io.instrIn(31, 20)
+       io.immidiate := io.instrIn(31, 20).asSInt
    }
 }

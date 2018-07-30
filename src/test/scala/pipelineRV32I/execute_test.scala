@@ -14,8 +14,7 @@ class EXTest(dut: rv32EX) extends PeekPokeTester(dut){
    poke(dut.io.funct, "b0000000000".U)
    poke(dut.io.reg1, positiveOperand1)
    poke(dut.io.reg2, positiveOperand2)
-   poke(dut.io.useImmidiate, Bool(false))
-   poke(dut.io.useNPCIn, Bool(false))
+   poke(dut.io.instrIn, "b00000000001100000000000010110011".asUInt(32.W))
    expect(dut.io.res, "h_0000_0180".U)
    step(1)
 
@@ -24,20 +23,18 @@ class EXTest(dut: rv32EX) extends PeekPokeTester(dut){
    poke(dut.io.reg1, positiveOperand1)
    poke(dut.io.reg2, 0.U)
    poke(dut.io.immidiate, positiveOperand2)
-   poke(dut.io.useImmidiate, Bool(true))
-   poke(dut.io.useNPCIn, Bool(false))
+   poke(dut.io.instrIn, "b00001000010011111000010000010011".asUInt(32.W))
    expect(dut.io.res, "h_0000_0180".U)
    step(1)
   
  
-   //adding immidiate and NPC
+   //adding immidiate and NPC - for now expected to fail
    poke(dut.io.funct, "b0000000000".U)
    poke(dut.io.reg1, 0.U)
    poke(dut.io.reg2, 0.U)
    poke(dut.io.immidiate, positiveOperand1)
    poke(dut.io.NPCIn, positiveOperand2)
-   poke(dut.io.useImmidiate, Bool(true))
-   poke(dut.io.useNPCIn, Bool(true))
+   poke(dut.io.instrIn, 0.U)
    expect(dut.io.res, "h_0000_0180".U)
    step(1)
 }
