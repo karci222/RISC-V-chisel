@@ -30,5 +30,11 @@ class rv32ID() extends Module(){
    }.elsewhen(io.instrIn(6,0) === OPCODE_STORE){
        io.immidiate := Cat(io.instrIn(31,25), io.instrIn(11, 7))
        io.funct     := 0.U
+   }.elsewhen(io.instrIn(6,0) === OPCODE_LOAD){
+       io.immidiate := io.instrIn(31, 20)
+       io.funct     := 0.U
+   }.elsewhen(io.instrIn(6,0) === OPCODE_I_TYPE){
+       io.funct := Cat(0.U(7.W), funct3)
+       io.immidiate := io.instrIn(31, 20)
    }
 }

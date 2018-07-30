@@ -20,7 +20,8 @@ class Compiler(file: String) {
 	  while(lines.hasNext){
 	     val line = lines.next()
 	     val command = line.split(" ")
-	     
+	     println("Compiling...")	     
+
 	     //not exactly the most beautiful if I ever wrote, for future generations, try to maybe make it... More beautiful!?
              if(command(0).compareToIgnoreCase(Commands.ADD) == 0 ||
                 command(0).compareToIgnoreCase(Commands.SUB) == 0 ||
@@ -242,8 +243,8 @@ object Commands{
 
 object Compile{
    def main(args: Array[String]){
-      val compiler = new Compiler(args(0))
       
+      val compiler = new Compiler(args(0))
       val mArray = compiler.compile()
       for(i <- 0 until 5)
 	println(mArray(i))
