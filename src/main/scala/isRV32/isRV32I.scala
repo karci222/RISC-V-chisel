@@ -9,4 +9,7 @@ object Instructions{
    //val OPCODE_I_TYPE_1 = Buts(b"
    val OPCODE_B_TYPE   = "b1100011".U
    val OPCODE_STORE    = "b0010011".U
+   val OPCODE_LOAD     = "b0000011".U
 }
+
+

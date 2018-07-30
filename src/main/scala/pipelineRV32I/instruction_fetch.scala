@@ -15,7 +15,7 @@ class rv32IF() extends Module(){
    val NPC = Wire(UInt(32.W))
 
 
-   when(io.condIn === Bool(true) && io.branch === Bool(true)){
+   when(io.condIn === true.B && io.branch === true.B){
      NPC := io.nextPC
    }.otherwise{
      NPC := PCReg + 4.U

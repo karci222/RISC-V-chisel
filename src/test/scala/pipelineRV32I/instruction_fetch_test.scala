@@ -34,6 +34,7 @@ class IFTest(dut: rv32IF) extends PeekPokeTester(dut){
   expect(dut.io.NPCOut, 16)
   step(1)
   poke(dut.io.condIn, UInt(1))
+  poke(dut.io.branch, UInt(1))
   poke(dut.io.nextPC, UInt(150))
   peek(dut.io.NPCOut)
   peek(dut.io.PCOut)
