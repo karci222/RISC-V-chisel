@@ -10,6 +10,8 @@ class rv32Ipipeline(program: Seq[UInt]) extends Module(){
    val instruction_fetch  = Module(new rv32IF())
    val instruction_memory = Module(new InstructionRom(program))
    val instruction_decode = Module(new rv32ID())
+   val execute            = Module(new rv32EX())
+   
 
    instruction_memory.io.addrIn := instruction_fetch.io.PCOut >> 2
 
