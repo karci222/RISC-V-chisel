@@ -4,6 +4,10 @@ package pipelineRV32I
 import chisel3._
 import chisel3.util._
 
+/*
+if it was difficult to write it should be difficult to read!!!
+*/
+
 class RegistryFile() extends Module(){
    val io = IO(new Bundle{
         val regOut1       = Output(UInt(32.W))
@@ -146,7 +150,7 @@ class RegistryFile() extends Module(){
    }
 
    
-   io.regOut1 := Reg0   
+   	io.regOut1 := Reg0   
 
    when(io.reg1Selector === 0.U){
       io.regOut1 := Reg0
