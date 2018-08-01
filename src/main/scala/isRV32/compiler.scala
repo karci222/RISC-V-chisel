@@ -65,7 +65,7 @@ class Compiler(file: String) {
 	println("File opened")	
 
 	for (i <- 0 until j){
-	   binaryFile.write("\""+ program(i) + "\".asUInt(32.W)")
+	   binaryFile.write("\""+ program(i) + "\".asUInt(32.W),")
 	   binaryFile.println()
         }
 
