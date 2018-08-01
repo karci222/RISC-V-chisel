@@ -12,7 +12,41 @@ class PipelineTest1(dut: PipelineTop) extends PeekPokeTester(dut){
 	step(1)
   }
 
+  expect(dut.io.res, "h_63".U)//add
+
   step(1)
+  expect(dut.io.res, "h_FFFF_FFE1".U) //SUB
+  step(1)
+  expect(dut.io.res, 68.U)//SLL
+  step(1)
+  expect(dut.io.res, 1.U)//SLT
+  step(1)
+  expect(dut.io.res, 1.U)//SLTU
+  step(1)
+  expect(dut.io.res, 99.U)//XOR
+  step(1)
+  expect(dut.io.res, 17.U)//SRL
+  step(1)
+  expect(dut.io.res, 17.U)//SRA
+  step(1)
+  expect(dut.io.res, 99)//OR
+  step(1)
+  expect(dut.io.res, 0.U)//AND
+  step(1)
+  step(1)//LW
+  step(1)//NOP
+  step(1)//NOP
+  step(1)//NOP
+  step(1)
+  expect(dut.io.res, 34.U)//LW_test
+  step(1)
+  expect(dut.io.res, 1.U)//SLTI
+  step(1)
+  expect(dut.io.res, 0.U)//SLTIU
+  step(1)
+  expect(dut.io.res, 0.U)//XORI
+  step(1)
+  expect(dut.io.res, 0.U)//ANDI
 }
 
 object PipelineTest1Main extends App {
