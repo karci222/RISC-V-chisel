@@ -19,15 +19,42 @@ class rv32EX() extends Module(){
    
    val useNPCIn = WireInit(false.B)
    val useImmidiate = WireInit(false.B)
+ 
+   useImmidiate := false.B
+   useNPCIn     := false.B
+   io.cond := false.B
+
 
    when(io.instrIn(6,0) === OPCODE_I_TYPE || io.instrIn(6,0) === OPCODE_STORE || io.instrIn(6,0) === OPCODE_LOAD){
        useImmidiate := true.B
    } 
+  
+   
+   when(io.instrIn(6,0) === OPCODE_B_TYPE){
+       when(io.instrIn(14, 12) === "b000".U){
+           io.cond := alu.io.res === 0.U
+       }
+       when(io.instrIn(14, 12) === "b001".U){
+           io.cond := alu.io.res =/= 0.U
+       }
+       when(io.instrIn(14, 12) === "b100".U){
+           io.cond := alu.io.res === 1.U
+       }
+       when(io.instrIn(14, 12) === "b101".U){
+           io.cond := alu.io.res === 0.U
+       }
+       when(io.instrIn(14, 12) === "b110".U){
+           io.cond := alu.io.res === 1.U
+       }
+       when(io.instrIn(14, 12) === "b111".U){
+           io.cond := alu.io.res === 0.U
+       }
+   }
 
    val muxA = Mux(useNPCIn, io.NPCIn, io.reg1)
    val muxB = Mux(useImmidiate, io.immidiate, io.reg2)
    
-   io.cond := 0.U
+   
 
    alu.io.funct := io.funct
    alu.io.A     := muxA
