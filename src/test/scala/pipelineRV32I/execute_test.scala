@@ -28,12 +28,14 @@ class EXTest(dut: rv32EX) extends PeekPokeTester(dut){
    step(1)
    
    //branch instruction test
-   poke(dut.io.funct, "b0000000010".U)
+   poke(dut.io.funct, "b0000000000".U)
    poke(dut.io.reg1, 12.U)
-   poke(dut.io.reg2, 12.U)
+   poke(dut.io.reg2, 14.U)
+   poke(dut.io.immidiate, "h_FFFF_FFF8".U)
+   poke(dut.io.NPCIn, 24.U)
    poke(dut.io.instrIn, "b00010000001100010100001001100011".asUInt(32.W))
-   expect(dut.io.cond, false.B)
-   expect(dut.io.res, 0.U)
+   expect(dut.io.cond, true.B)
+   expect(dut.io.res, 16.U)
    step(1)
 }
 

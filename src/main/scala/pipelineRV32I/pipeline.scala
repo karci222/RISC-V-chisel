@@ -66,7 +66,7 @@ class rv32Ipipeline(program: Seq[UInt]) extends Module(){
 
    instruction_fetch.io.condIn 	:= ex_mem_condition_reg
    instruction_fetch.io.nextPC  := ex_mem_NPC_reg
-   instruction_fetch.io.branch  := false.B  
+   instruction_fetch.io.instrIn := ex_mem_IR_reg
  
    instruction_decode.io.instrIn := if_id_IR_reg
 

@@ -1,6 +1,7 @@
 package pipelineRV32I
 
 import chisel3._
+import isRV32.Instructions._
 
 class rv32IF() extends Module(){
    val io = IO(new Bundle{
@@ -8,14 +9,13 @@ class rv32IF() extends Module(){
       val PCOut 	 = Output(UInt(32.W))
       val condIn 	 = Input(Bool())
       val nextPC         = Input(UInt(32.W))
-      val branch         = Input(Bool())
+      val instrIn        = Input(UInt(32.W))
    })
 
    val PCReg = RegInit(0.U(32.W))   
    val NPC = Wire(UInt(32.W))
 
-
-   when(io.condIn === true.B && io.branch === true.B){
+   when(io.condIn === true.B && io.instrIn(6,0) === OPCODE_B_TYPE){
      NPC := io.nextPC
    }.otherwise{
      NPC := PCReg + 4.U

@@ -31,23 +31,25 @@ class rv32EX() extends Module(){
   
    
    when(io.instrIn(6,0) === OPCODE_B_TYPE){
+       useImmidiate := true.B
+       useNPCIn     := true.B
        when(io.instrIn(14, 12) === "b000".U){
-           io.cond := alu.io.res === 0.U
+           io.cond := io.reg1 === io.reg2
        }
        when(io.instrIn(14, 12) === "b001".U){
-           io.cond := alu.io.res =/= 0.U
+           io.cond := io.reg1 =/= io.reg2
        }
        when(io.instrIn(14, 12) === "b100".U){
-           io.cond := alu.io.res === 1.U
+           io.cond := io.reg1.asSInt < io.reg2.asSInt
        }
        when(io.instrIn(14, 12) === "b101".U){
-           io.cond := alu.io.res === 0.U
+           io.cond := !(io.reg1.asSInt < io.reg2.asSInt)
        }
        when(io.instrIn(14, 12) === "b110".U){
-           io.cond := alu.io.res === 1.U
+           io.cond := io.reg1 < io.reg2
        }
        when(io.instrIn(14, 12) === "b111".U){
-           io.cond := alu.io.res === 0.U
+           io.cond := !(io.reg1 < io.reg2)
        }
    }
 
