@@ -9,6 +9,9 @@ class Compiler(file: String) {
    val sourceFileName = file
    val immidiateMask  = 31
    val immidiateMask2 = 4064
+   val immidiateMaskB1 = 1008
+   val immidiateMaskB2 = 15
+   val immidiateMaskB3 = 1024
 
    def compile(): Array[String] = {
 	 	
@@ -53,7 +56,22 @@ class Compiler(file: String) {
 		  val instruction = parseArithmeticImmidiate(command)
 		  println(instruction)
 		  program(j) = instruction
-	     }
+	     }else if(command(0).compareToIgnoreCase(Commands.SLLI) == 0 ||
+		command(0).compareToIgnoreCase(Commands.SRLI) == 0 ||
+		command(0).compareToIgnoreCase(Commands.SRAI) == 0){
+		  val instruction = parseArithmeticImmidiate2(command)
+		  println(instruction)
+		  program(j) = instruction
+             }else if (command(0).compareToIgnoreCase(Commands.BEQ) == 0 ||
+		command(0).compareToIgnoreCase(Commands.BNE) == 0 ||
+		command(0).compareToIgnoreCase(Commands.BLT) == 0 ||
+                command(0).compareToIgnoreCase(Commands.BGE) == 0 ||
+		command(0).compareToIgnoreCase(Commands.BLTU) == 0 ||
+		command(0).compareToIgnoreCase(Commands.BGEU) == 0){
+		  val instruction = parseBranch(command)
+		  println(instruction)
+		  program(j) = instruction
+             }
 
 	     j = j +1
 	  }
@@ -211,12 +229,98 @@ class Compiler(file: String) {
 	return "b"+toBinary(instruction, 32)
    }
 
+   def parseArithmeticImmidiate2(command: Array[String]): String = {
+	var opcode = 19
+	var funct3 = 1	
+        var funct7 = 0
+
+	if(command(0).compareToIgnoreCase(Commands.SLLI) == 0){
+
+        }else if(command(0).compareToIgnoreCase(Commands.SRLI) == 0){
+	    funct3 = 5
+	}else if(command(0).compareToIgnoreCase(Commands.SRAI) == 0){
+	    funct3 = 5
+	    funct7 = 32
+	}
+
+	var rd = parseRegister(command(1))
+        var rs1 = parseRegister(command(2))
+	var immidiate = command(3).toInt
+	
+	var instruction = 0
+	
+	rd = rd << 7
+	rs1 = rs1 << 15
+	funct3 = funct3 << 12
+	immidiate = immidiate << 20
+        funct7 = funct7 << 25
+
+	instruction = instruction | opcode
+	instruction = instruction | rd
+	instruction = instruction | rs1
+	instruction = instruction | funct3
+   	instruction = instruction | immidiate
+    	instruction = instruction | funct7
+   
+	return "b"+toBinary(instruction, 32)
+   }
+
+   def parseBranch(command: Array[String]): String = {
+        var opcode = 99
+        var funct3 = 0
+        
+        if(command(0).compareToIgnoreCase(Commands.BEQ) == 0){
+
+        }else if(command(0).compareToIgnoreCase(Commands.BNE) == 0){
+	    funct3 = 1
+	}else if(command(0).compareToIgnoreCase(Commands.BLT) == 0){
+	    funct3 = 4
+	}else if(command(0).compareToIgnoreCase(Commands.BGE) == 0){
+	    funct3 = 5
+	}else if(command(0).compareToIgnoreCase(Commands.BLTU) == 0){
+	    funct3 = 6
+	}else if(command(0).compareToIgnoreCase(Commands.BGEU) == 0){
+	    funct3 = 7
+	}
+
+        var rs1 = parseRegister(command(1))
+        var rs2 = parseRegister(command(2))
+
+        var immidiate = command(3).toInt
+        var immidiate1 = immidiate >> 11
+        var immidiate2 = (immidiate & immidiateMaskB1) >> 4
+        var immidiate3 = (immidiate & immidiateMaskB2)
+        var immidiate4 = (immidiate & immidiateMaskB3) >> 10
+
+        var instruction = 0
+        
+        immidiate4 = immidiate4 << 7
+        immidiate3 = immidiate3 << 8
+        funct3     = funct3 << 12
+        rs1        = rs1 << 15
+        rs2        = rs2 << 20
+        immidiate2 = immidiate2 << 25
+        immidiate1 = immidiate1 << 31
+
+        instruction = instruction | opcode
+	instruction = instruction | immidiate4
+        instruction = instruction | immidiate3
+        instruction = instruction | funct3
+        instruction = instruction | rs1
+        instruction = instruction | rs2
+        instruction = instruction | immidiate2
+        instruction = instruction | immidiate1
+
+	return "b"+toBinary(instruction, 32)
+   }
+
    def parseRegister(reg: String): Int = {
 	return reg.substring(1).toInt
    }
 
-   def toBinary(i: Int, digits: Int = 8) =
+   def toBinary(i: Int, digits: Int = 8): String ={
     String.format("%" + digits + "s", i.toBinaryString).replace(' ', '0')
+   }
 }
 
 
@@ -239,6 +343,15 @@ object Commands{
   val XORI = "XORI"
   val ORI  = "ORI"
   val ANDI = "ANDI"
+  val SLLI = "SLLI"
+  val SRLI = "SRLI"
+  val SRAI = "SRAI"
+  val BEQ  = "BEQ"
+  val BNE  = "BNE"
+  val BLT  = "BLT"
+  val BGE  = "BGE"
+  val BLTU = "BLTU"
+  val BGEU = "BGEU"
 }
 
 object Compile{

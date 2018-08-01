@@ -66,4 +66,4 @@ object WriteBackTestMain extends App {
   iotesters.Driver.execute(Array("--fint-write-vcd"), () => new rv32WB) {
     c => new WriteBackTest(c)
   }
-}
+}	

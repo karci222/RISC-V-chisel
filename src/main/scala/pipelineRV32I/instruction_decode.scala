@@ -23,18 +23,38 @@ class rv32ID() extends Module(){
    
    io.funct := 0.U
    io.immidiate := 0.U
+   val immidiate_temp = Wire(SInt(32.W))
+   immidiate_temp := 0.asSInt
   
    when(io.instrIn(6, 0) === OPCODE_R_TYPE){
        io.immidiate := 0.U
        io.funct := funct_temp
-   }.elsewhen(io.instrIn(6,0) === OPCODE_STORE){
-       io.immidiate := (Cat(io.instrIn(31,25), io.instrIn(11, 7)).asSInt).asUInt
+   }.elsewhen(io.instrIn(6,0) === OPCODE_STORE){												
+       immidiate_temp := (Cat(io.instrIn(31,25), io.instrIn(11, 7)).asSInt)
+       io.immidiate := immidiate_temp.asUInt
        io.funct     := 0.U
    }.elsewhen(io.instrIn(6,0) === OPCODE_LOAD){
-       io.immidiate := (io.instrIn(31, 20).asSInt).asUInt
+       immidiate_temp := (io.instrIn(31, 20).asSInt)
+       io.immidiate := immidiate_temp.asUInt
        io.funct     := 0.U
    }.elsewhen(io.instrIn(6,0) === OPCODE_I_TYPE){
-       io.funct := Cat(0.U(7.W), funct3)
-       io.immidiate := (io.instrIn(31, 20).asSInt).asUInt
+       when(funct3 ==="b001".U ||  funct3 === "b101".U){
+	  io.funct := Cat(funct7, funct3)
+          io.immidiate := io.instrIn(24, 20).asUInt
+       }.otherwise{
+          io.funct := Cat(0.U(7.W), funct3)
+          immidiate_temp := (io.instrIn(31, 20).asSInt)
+	  io.immidiate := immidiate_temp.asUInt
+       }
+   }.elsewhen(io.instrIn(6,0) === OPCODE_B_TYPE){
+       when(funct3 === "b000".U || funct3 === "b001".U){
+          io.funct := "b0100000000".U
+       }.elsewhen(funct3 === "b100".U || funct3 === "b101".U){
+	  io.funct := "b0000000010".U
+       }.elsewhen(funct3 === "b110".U || funct3 === "b111".U){
+   	  io.funct := "b0000000011".U
+       }
+       immidiate_temp := (Cat(io.instrIn(31), io.instrIn(7), io.instrIn(30, 25), io.instrIn(11,8), 0.U(1.W)).asSInt)
+       io.immidiate := immidiate_temp.asUInt
    }
 }

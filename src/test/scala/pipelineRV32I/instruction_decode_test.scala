@@ -34,6 +34,20 @@ class IDTest(dut: rv32ID) extends PeekPokeTester(dut){
   expect(dut.io.immidiate, 88.U)
   expect(dut.io.funct, 2.U)
   step(1)
+  
+  //immidiate instruction type 2
+  poke(dut.io.instrIn, "b00000000100000010001100110010011".asUInt(32.W))
+  expect(dut.io.reg1, 2.U)
+  expect(dut.io.immidiate, 8)
+  expect(dut.io.funct, 1.U)
+  step(1)
+
+  //branch instruction test
+  poke(dut.io.instrIn, "b10010110001000001001001011100011".asUInt(32.W))
+  expect(dut.io.reg1, 1)
+  expect(dut.io.reg2, 2)
+  expect(dut.io.immidiate, "h_FFFF_F964".U)
+  expect(dut.io.funct, "b0100000000".U)
 }
 
 object IDTestMain extends App {
