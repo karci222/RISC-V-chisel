@@ -48,7 +48,19 @@ class rv32ID() extends Module(){
        }
    }.elsewhen(io.instrIn(6,0) === OPCODE_B_TYPE){
        io.funct := 0.U
-       immidiate_temp := (Cat(io.instrIn(31), io.instrIn(7), io.instrIn(30, 25), io.instrIn(11,8), 0.U(1.W)).asSInt)
+       immidiate_temp := (Cat(io.instrIn(31), io.instrIn(7), io.instrIn(30, 25), io.instrIn(11,8), 0.U).asSInt)
+       io.immidiate := immidiate_temp.asUInt
+   }.elsewhen(io.instrIn(6,0) === OPCODE_JAL){
+       io.funct := 0.U
+       immidiate_temp := (Cat(io.instrIn(31), io.instrIn(19, 12), io.instrIn(20), io.instrIn(30, 21), 0.U).asSInt)
+       io.immidiate := immidiate_temp.asUInt
+   }.elsewhen(io.instrIn(6,0) === OPCODE_JALR){
+       io.funct := 0.U
+       immidiate_temp := io.instrIn(31, 20).asSInt
+       io.immidiate := immidiate_temp.asUInt
+   }.elsewhen(io.instrIn(6,0) === OPCODE_LUI || io.instrIn(6,0) === OPCODE_AUIPC){
+       io.funct := 0.U
+       immidiate_temp := io.instrIn(31, 12).asSInt
        io.immidiate := immidiate_temp.asUInt
    }
 }

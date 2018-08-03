@@ -12,6 +12,8 @@ class Compiler(file: String) {
    val immidiateMaskB1 = 1008
    val immidiateMaskB2 = 15
    val immidiateMaskB3 = 1024
+   val immidiateMaskJ1 = 1023
+   val immidiateMaskJ2 = 522240
 
    def compile(): Array[String] = {
 	 	
@@ -70,6 +72,18 @@ class Compiler(file: String) {
 		command(0).compareToIgnoreCase(Commands.BGEU) == 0){
 		  val instruction = parseBranch(command)
 		  println(instruction)
+		  program(j) = instruction
+             }else if(command(0).compareToIgnoreCase(Commands.JAL) == 0){
+	          val instruction = parseJAL(command)
+	          program(j) = instruction
+             }else if(command(0).compareToIgnoreCase(Commands.JALR) == 0){
+		  val instruction = parseJAR(command)
+		  program(j) = instruction
+             }else if(command(0).compareToIgnoreCase(Commands.LUI) == 0){
+		  val instruction = parseLUI(command)
+		  program(j) = instruction
+	     }else if(command(0).compareToIgnoreCase(Commands.AUIPC) == 0){
+                  val instruction = parseAUIPC(command)
 		  program(j) = instruction
              }
 
@@ -314,6 +328,87 @@ class Compiler(file: String) {
 	return "b"+toBinary(instruction, 32)
    }
 
+   def parseJAL(command: Array[String]): String = {
+      var opcode = 111
+      var rd = parseRegister(command(1))
+      var immidiate = command(2).toInt
+      
+      var imm1 = immidiate >> 19
+      var imm2 = (immidiate & immidiateMaskJ1)
+      var imm3 = (immidiate >> 10) & 1
+      var imm4 = (immidiate & immidiateMaskJ2) >> 11
+
+      imm1 = imm1 << 31
+      imm2 = imm2 << 21
+      imm3 = imm3 << 20
+      imm4 = imm4 << 12
+      rd   = rd << 7
+
+      var instruction = 0
+      instruction = opcode
+      instruction = instruction | rd
+      instruction = instruction | imm1
+      instruction = instruction | imm2
+      instruction = instruction | imm3
+      instruction = instruction | imm4
+
+      return "b"+toBinary(instruction, 32)
+   }
+
+   def parseJAR(command: Array[String]): String = {
+      var opcode = 103
+      var rd = parseRegister(command(1))
+      var rs1 = parseRegister(command(2))
+      var immidiate = command(3).toInt
+      var funct = 0
+      
+      immidiate = immidiate << 20
+      rs1       = rs1 << 15
+      rd        = rd << 7
+      funct     = funct << 12 
+ 
+      var instruction = 0
+      instruction = opcode
+      instruction = instruction | immidiate
+      instruction = instruction | rs1
+      instruction = instruction | rd
+      instruction = instruction | funct
+
+      return "b"+toBinary(instruction, 32)
+   }
+
+   def parseLUI(command: Array[String]): String = {
+      var opcode = 55
+      var rd = parseRegister(command(1))
+      var immidiate = command(2).toInt
+      
+      rd = rd << 7
+      immidiate = immidiate << 12
+      
+      var instruction = 0
+      instruction = opcode
+      instruction = instruction | rd
+      instruction = instruction | immidiate
+
+      return "b"+toBinary(instruction, 32)
+   }
+
+   def parseAUIPC(command: Array[String]): String = {
+      var opcode = 23
+      var rd = parseRegister(command(1))
+      var immidiate = command(2).toInt
+      
+      rd = rd << 7
+      immidiate = immidiate << 12
+      
+      var instruction = 0
+      instruction = opcode
+      instruction = instruction | rd
+      instruction = instruction | immidiate
+
+      return "b"+toBinary(instruction, 32)
+   }
+
    def parseRegister(reg: String): Int = {
 	return reg.substring(1).toInt
    }
@@ -352,6 +447,10 @@ object Commands{
   val BGE  = "BGE"
   val BLTU = "BLTU"
   val BGEU = "BGEU"
+  val JAL  = "JAL"
+  val JALR  = "JALR"
+  val LUI  = "LUI"
+  val AUIPC= "AUIPC"
 }
 
 object Compile{

@@ -47,6 +47,8 @@ class PipelineTest1(dut: PipelineTop) extends PeekPokeTester(dut){
   expect(dut.io.res, 0.U)//XORI
   step(1)
   expect(dut.io.res, 0.U)//ANDI
+  step(1)
+  step(10)
 }
 
 object PipelineTest1Main extends App {
