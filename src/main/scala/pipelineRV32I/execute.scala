@@ -53,6 +53,25 @@ class rv32EX() extends Module(){
        }
    }
 
+   when(io.instrIn(6,0) === OPCODE_JAL){
+       useImmidiate := true.B
+       useNPCIn := true.B
+   }
+
+   when(io.instrIn(6,0) === OPCODE_JALR){
+       useImmidiate := true.B
+       //io.res := alu.io.res & "h_FFFF_FFFE".U
+   }
+   
+   when(io.instrIn(6,0) === OPCODE_LUI){
+       useImmidiate := true.B
+   }
+
+   when(io.instrIn(6,0) === OPCODE_AUIPC){
+       useImmidiate := true.B
+       useNPCIn     := true.B
+   }
+
    val muxA = Mux(useNPCIn, io.NPCIn, io.reg1)
    val muxB = Mux(useImmidiate, io.immidiate, io.reg2)
    

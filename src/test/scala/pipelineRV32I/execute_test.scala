@@ -37,6 +37,40 @@ class EXTest(dut: rv32EX) extends PeekPokeTester(dut){
    expect(dut.io.cond, true.B)
    expect(dut.io.res, 16.U)
    step(1)
+
+  //LUI test
+  poke(dut.io.instrIn, "b00000011110100100001101000110111".asUInt(32.W))
+  poke(dut.io.immidiate, 15649<<12)
+  poke(dut.io.funct, 0.U)
+  poke(dut.io.reg1, 0.U)
+  poke(dut.io.reg2, 13.U)
+  expect(dut.io.res,  15649<<12)
+  step(1)
+
+  //AUIPC test
+  poke(dut.io.instrIn, "b00000001000111011001101010010111".asUInt(32.W))
+  poke(dut.io.immidiate, 4569<<12)
+  poke(dut.io.reg1, 0.U)
+  poke(dut.io.reg2, 13.U)
+  poke(dut.io.NPCIn, 16.U)
+  poke(dut.io.funct, 0.U)  
+  expect(dut.io.res, (4569 << 12) + 16)
+  step(1)
+
+  //JAL test
+  poke(dut.io.instrIn, "b01100001011111100000101101101111".asUInt(32.W))
+  poke(dut.io.immidiate, 921110.U)
+  poke(dut.io.NPCIn, 16.U)
+  poke(dut.io.funct, 0.U)
+  expect(dut.io.res, 921126)
+  step(1)
+
+  //JALR test
+  poke(dut.io.instrIn, "b01001101001100001000101111100111".asUInt(32.W))
+  poke(dut.io.reg1, 136.U)
+  poke(dut.io.immidiate, 1235.U)
+  expect(dut.io.res, 1371.U)
+  step(1)
 }
 
 object EXTestMain extends App {

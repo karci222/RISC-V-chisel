@@ -25,6 +25,8 @@ class rv32ID() extends Module(){
    io.immidiate := 0.U
    val immidiate_temp = Wire(SInt(32.W))
    immidiate_temp := 0.asSInt
+   val zeros12 = Wire(UInt(12.W))
+   zeros12 := 0.asUInt
   
    when(io.instrIn(6, 0) === OPCODE_R_TYPE){
        io.immidiate := 0.U
@@ -59,8 +61,8 @@ class rv32ID() extends Module(){
        immidiate_temp := io.instrIn(31, 20).asSInt
        io.immidiate := immidiate_temp.asUInt
    }.elsewhen(io.instrIn(6,0) === OPCODE_LUI || io.instrIn(6,0) === OPCODE_AUIPC){
-       io.funct := 0.U
-       immidiate_temp := io.instrIn(31, 12).asSInt
-       io.immidiate := immidiate_temp.asUInt
+       io.funct := 0.U 
+       io.immidiate := Cat(io.instrIn(31, 12), zeros12)
+       io.reg1 := 0.U
    }
 }

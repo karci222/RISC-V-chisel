@@ -15,11 +15,12 @@ class rv32IF() extends Module(){
    val PCReg = RegInit(0.U(32.W))   
    val NPC = Wire(UInt(32.W))
 
-   when(io.condIn === true.B && io.instrIn(6,0) === OPCODE_B_TYPE){
+   when((io.condIn === true.B && io.instrIn(6,0) === OPCODE_B_TYPE) || (io.instrIn(6,0) === OPCODE_JAL || io.instrIn(6,0) === OPCODE_JALR)){
      NPC := io.nextPC
    }.otherwise{
      NPC := PCReg + 4.U
    }
+   
   
    io.NPCOut := NPC	
    PCReg := NPC

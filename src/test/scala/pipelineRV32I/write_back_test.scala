@@ -60,6 +60,38 @@ class WriteBackTest(dut: rv32WB) extends PeekPokeTester(dut){
   expect(dut.io.regInSelector, 8.U)
   expect(dut.io.writeRegister, true.B)
   step(1)
+
+  poke(dut.io.instrIn, "b00000011110100100001101000110111".asUInt(32.W))
+  poke(dut.io.res,  45.U)
+  poke(dut.io.dataIn, 6.U)
+  expect(dut.io.dataToReg, 45.U)
+  expect(dut.io.regInSelector, 20.U)
+  expect(dut.io.writeRegister, true.B)
+  step(1)
+
+  poke(dut.io.instrIn, "b00000001000111011001101010010111".asUInt(32.W))
+  poke(dut.io.res,  45.U)
+  poke(dut.io.dataIn, 6.U)
+  expect(dut.io.dataToReg, 45.U)
+  expect(dut.io.regInSelector, 21.U)
+  expect(dut.io.writeRegister, true.B)
+  step(1)
+
+  poke(dut.io.instrIn, "b01100001011111100000101101101111".asUInt(32.W))
+  poke(dut.io.res,  45.U)
+  poke(dut.io.dataIn, 6.U)
+  expect(dut.io.dataToReg, 45.U)
+  expect(dut.io.regInSelector, 22.U)
+  expect(dut.io.writeRegister, true.B)
+  step(1)
+
+  poke(dut.io.instrIn, "b01001101001100001000101111100111".asUInt(32.W))
+  poke(dut.io.res,  45.U)
+  poke(dut.io.dataIn, 6.U)
+  expect(dut.io.dataToReg, 45.U)
+  expect(dut.io.regInSelector, 23.U)
+  expect(dut.io.writeRegister, true.B)
+  step(1)  
 }
 
 object WriteBackTestMain extends App {

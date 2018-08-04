@@ -53,10 +53,12 @@ class rv32Ipipeline(program: Seq[UInt]) extends Module(){
    ex_mem_B_reg         := id_ex_B_reg
 
    //mem_wb registers
+   val mem_wb_NPC_reg       = RegInit(0.U(32.W))
    val mem_wb_IR_reg        = RegInit(0.U(32.W))
    val mem_wb_res_reg       = RegInit(0.U(32.W))
    val mem_wb_lmd_reg       = RegInit(0.U(32.W))
 
+   mem_wb_NPC_reg := ex_mem_NPC_reg
    mem_wb_IR_reg  := ex_mem_IR_reg
    mem_wb_res_reg := ex_mem_res_reg
    mem_wb_lmd_reg := mem.io.dataOut
@@ -90,7 +92,8 @@ class rv32Ipipeline(program: Seq[UInt]) extends Module(){
    write_back.io.instrIn := mem_wb_IR_reg
    write_back.io.res     := mem_wb_res_reg
    write_back.io.dataIn  := mem_wb_lmd_reg
+   write_back.io.NPCIn   := mem_wb_NPC_reg
 
-   io.res := ex_mem_res_reg
+   io.res := execute.io.res
 }
 

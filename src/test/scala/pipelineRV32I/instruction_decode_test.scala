@@ -52,13 +52,14 @@ class IDTest(dut: rv32ID) extends PeekPokeTester(dut){
 
   //LUI test
   poke(dut.io.instrIn, "b00000011110100100001101000110111".asUInt(32.W))
-  expect(dut.io.immidiate, 15649.U)
+  expect(dut.io.immidiate, 15649 << 12)
   expect(dut.io.funct, 0.U)
+  expect(dut.io.reg1, 0.U)
   step(1)
 
   //AUIPC test
   poke(dut.io.instrIn, "b00000001000111011001101010010111".asUInt(32.W))
-  expect(dut.io.immidiate, 4569.U)
+  expect(dut.io.immidiate, 4569 << 12)
   expect(dut.io.funct, 0.U)  
   step(1)
 

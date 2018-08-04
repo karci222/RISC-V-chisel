@@ -51,10 +51,22 @@ class PipelineTest1(dut: PipelineTop) extends PeekPokeTester(dut){
   step(10)
 }
 
+//empty test that just runs a program
+class PipelineTest2(dut: PipelineTop) extends PeekPokeTester(dut){
+  step(1500)
+}
+
 object PipelineTest1Main extends App {
    
   iotesters.Driver.execute(Array("--fint-write-vcd"), () => new PipelineTop) {
     c => new PipelineTest1(c)
+  }
+}
+
+object PipelineTest2Main extends App {
+   
+  iotesters.Driver.execute(Array("--fint-write-vcd"), () => new PipelineTop) {
+    c => new PipelineTest2(c)
   }
 }
 
