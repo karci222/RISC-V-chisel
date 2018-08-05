@@ -26,6 +26,8 @@ OR   xrd xrs1 xrs2 -- or
 
 AND  xrd xrs1 xrs2 -- and
 
+
+
 ### Register-immidiate instructions
 
 ADDI  xrd xrs1 imm - adds register and immidiate
@@ -45,6 +47,29 @@ LW xrd xbase offset - loads word
 
 ### Store
 SW xbase xsource offset - stores word
+
+### Branch
+BEQ xrs1 xrs2 imm - branch if rs1 is the same as rs2
+
+BNE xrs1 xrs2 imm - branch if rs1 and rs are not the same
+
+BLT xrs1 xrs2 imm - branch if rs1 is lower than rs2 (signed)
+
+BGE xrs1 xrs2 imm - branch if rs1 is larger or equal to rs2 (signed)
+
+BLTU xrs1 xrs2 imm - branch if rs1 is lower than rs2 (unsigned)
+
+BGEU xrs1 xrs2 imm - branch if rs1 is larger or equal to rs2 (unsigned)
+
+### Jumps
+JAL xrd imm - jumps and stores the next PC address to the destination register (PC after jump instruciton)
+
+JALR xrd xrs1 imm - similar to JAL, but uses rs1 and adds immidiate offset
+
+### Load upper immidiate and add upper immidiate
+LUI xrd imm - builds 32-bit constants by shifting immidiate by 12 bits and storing it to rd
+
+AUIPC xrd imm - similar to LUI, but adds value of register PC to the immidiate
 
 ## How to run
 
