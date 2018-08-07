@@ -13,7 +13,7 @@ class DataMemory(n: Int = 1024) extends Module(){
        val load    = Input(Bool())
     })
 
-    val syncMem = Mem(1024, UInt(32.W))
+    val syncMem = Mem(2048, UInt(32.W))
     
     
     when(io.load){

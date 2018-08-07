@@ -9,16 +9,20 @@ class rv32MEM() extends Module(){
        val dataIn  = Input(UInt(32.W))
        val dataOut = Output(UInt(32.W))
        val instrIn = Input(UInt(32.W))
+
+       val addrOutPipeline = Output(UInt(32.W))
+       val dataOutPipeline = Output(UInt(32.W))
+       val dataInPipeline  = Input(UInt(32.W))
+       val WE              = Output(UInt(32.W))
    })
 
-   val dataMemory = Module(new DataMemory())   
+   io.WE := false.B
 
-   dataMemory.io.addrIn := io.addrIn
-   dataMemory.io.dataIn := io.dataIn
-   io.dataOut           := dataMemory.io.dataOut
-   dataMemory.io.load   := false.B
+   io.addrOutPipeline := io.addrIn
+   io.dataOutPipeline := io.dataIn
+   io.dataOut         := io.dataInPipeline
 
    when(io.instrIn(6,0) === OPCODE_STORE){
-     dataMemory.io.load := true.B
+     io.WE := true.B
    }
 }

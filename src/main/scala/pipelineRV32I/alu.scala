@@ -17,40 +17,60 @@ class ALU32() extends Module(){
    val B = io.B
 
 
-   val resTemp = Wire(UInt(33.W))
-   resTemp := 0.U
+   val resTemp1 = WireInit(0.U(32.W))
+   val resTemp2 = WireInit(0.U(32.W))
+   val resTemp3 = WireInit(0.U(32.W))
+   val resTemp4 = WireInit(0.U(32.W))
+   val resTemp5 = WireInit(0.U(32.W))
+   val resTemp6 = WireInit(0.U(32.W))
+   val resTemp7 = WireInit(0.U(32.W))
+   val resTemp8 = WireInit(0.U(32.W))
+   val resTemp9 = WireInit(0.U(32.W))
+   val resTemp10 = WireInit(0.U(32.W))
+
+   resTemp1 := A+B
+   resTemp2 := A-B
+   resTemp3 := A << B(4, 0)
+   resTemp4 := A.asSInt < B.asSInt
+   resTemp5 := A < B
+   resTemp6 := A ^ B
+   resTemp7 := A >> B(4,0)
+   resTemp8 := (A.asSInt >> B(4,0)).asUInt
+   resTemp9 := A | B
+   resTemp10 := A & B
 
    when(io.funct === "b0000000000".U){
      //performs addition
-     resTemp := A+B
+     io.res := resTemp1
    }.elsewhen(io.funct === "b0100000000".U){
      //performs subtraction
-     resTemp := A-B
+     io.res := resTemp2
    }.elsewhen(io.funct === "b0000000001".U){
      //SLL
-     resTemp := A << B(4, 0)
+     io.res := resTemp3
    }.elsewhen(io.funct === "b0000000010".U){
      //SLT
-     resTemp := A.asSInt < B.asSInt
+     io.res := resTemp4
    }.elsewhen(io.funct === "b0000000011".U){
      //SLTU
-     resTemp := A < B
+     io.res := resTemp5
    }.elsewhen(io.funct === "b0000000100".U){
      //XOR
-     resTemp := A ^ B
+     io.res := resTemp6
    }.elsewhen(io.funct === "b0000000101".U){
      //SRL
-     resTemp := A >> B(4,0)
+     io.res := resTemp7
    }.elsewhen(io.funct === "b0100000101".U){
      //SRA
-     resTemp := (A.asSInt >> B(4,0)).asUInt
+     io.res := resTemp8
    }.elsewhen(io.funct === "b0000000110".U){
      //OR
-     resTemp := A | B
+     io.res := resTemp9
    }.elsewhen(io.funct === "b0000000111".U){
      //AND
-     resTemp := A & B
+     io.res := resTemp10
+   }.otherwise{
+     io.res := 0.U
    }
    
-   io.res := resTemp(31, 0)
 }

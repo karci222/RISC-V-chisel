@@ -5,6 +5,10 @@ import chisel3._
 class rv32Ipipeline(program: Seq[UInt]) extends Module(){
    val io = IO(new Bundle{
        val res = Output(UInt(32.W))
+       val addrOutPipeline = Output(UInt(32.W))
+       val dataOutPipeline = Output(UInt(32.W))
+       val dataInPipeline  = Input(UInt(32.W))
+       val WE              = Output(UInt(32.W))
    })
 
    val instruction_fetch  = Module(new rv32IF())
@@ -85,9 +89,13 @@ class rv32Ipipeline(program: Seq[UInt]) extends Module(){
    execute.io.NPCIn     := id_ex_NPC_reg
    execute.io.instrIn   := id_ex_IR_reg
 
-   mem.io.addrIn  := ex_mem_res_reg
-   mem.io.dataIn  := ex_mem_B_reg
-   mem.io.instrIn := ex_mem_IR_reg
+   mem.io.addrIn         := ex_mem_res_reg
+   mem.io.dataIn         := ex_mem_B_reg
+   mem.io.instrIn        := ex_mem_IR_reg
+   io.addrOutPipeline    := mem.io.addrOutPipeline
+   io.dataOutPipeline    := mem.io.dataOutPipeline
+   mem.io.dataInPipeline := io.dataInPipeline
+   io.WE                 := mem.io.WE
 
    write_back.io.instrIn := mem_wb_IR_reg
    write_back.io.res     := mem_wb_res_reg

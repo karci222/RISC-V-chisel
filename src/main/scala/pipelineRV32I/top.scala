@@ -2,8 +2,8 @@ package pipelineRV32I
 
 import chisel3._
 
-class PipelineTop() extends Module(){
-   val io = IO(new Bundle{
+class Top() extends Module(){
+  val io = IO(new Bundle{
      val res = Output(UInt(32.W))
      val LED0 = Output(UInt(1.W))
    })
@@ -54,8 +54,8 @@ class PipelineTop() extends Module(){
    dataMemory.io.addrIn := pipeline.io.addrOutPipeline
    dataMemory.io.dataIn := pipeline.io.dataOutPipeline
    pipeline.io.dataInPipeline := dataMemory.io.dataOut
-   
+}  
+
+object PipelineMain extends App{
+  chisel3.Driver.execute(Array("--target-dir", "generated"), () => new Top())
 }
-
-
-
