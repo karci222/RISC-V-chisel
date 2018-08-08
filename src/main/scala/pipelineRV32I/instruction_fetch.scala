@@ -10,7 +10,6 @@ class rv32IF() extends Module(){
       val condIn 	 = Input(Bool())
       val nextPC         = Input(UInt(32.W))
       val instrIn        = Input(UInt(32.W))
-      val stall          = Input(Bool())
    })
 
    val PCReg = RegInit(0.U(32.W))   
@@ -18,8 +17,6 @@ class rv32IF() extends Module(){
 
    when((io.condIn === true.B && io.instrIn(6,0) === OPCODE_B_TYPE) || (io.instrIn(6,0) === OPCODE_JAL || io.instrIn(6,0) === OPCODE_JALR)){
      NPC := io.nextPC
-   }.elsewhen(stall){
-     NPC := PCReg
    }.otherwise{
      NPC := PCReg + 4.U
    }

@@ -99,27 +99,5 @@ class rv32Ipipeline(program: Seq[UInt]) extends Module(){
    write_back.io.NPCIn   := mem_wb_NPC_reg
 
    io.res := execute.io.res
-
-   val hazardOPAExMem = Wire(Bool())
-   val hazardOPAMemWb = Wire(Bool())
-   hazardOPAExMem := id_ex_IR_reg(19, 15) === ex_mem_IR_reg(11,7)
-   hazardOPAMemWb := id_ex_IR_reg(19, 15) === wb_mem_IR_reg(11,7)
-
-   val hazardOPBExMem = Wire(Bool())
-   val hazardOPBMemWb = Wire(Bool())
-   hazard
-   
-   //first resolves i ex_mem stage hazard - should have precedence since it is the latest value. The if there is hazard in the wb we forward it from there 
-   when(hazardOPA_ex_mem && mem_instruction_is_using_rd && ex_instruction_is_using_rs1){
-       execute.io.reg1 := ex_mem_res_reg
-   }.elsewhen(hazardOPA_wb_mem && wb_instruction_is_using_rd && ex_instruction_is_using_rs1){
-       execute.io.reg1 := writeBack.io.dataToReg
-   }
-
-   when(hazardOPA_ex_mem && mem_instruction_is_using_rd && ex_instruction_is_using_rs2){
-       execute.io.reg2 := ex_mem_res_reg
-   }.elsewhen(hazardOPA_wb_mem && wb_instruction_is_using_rd && ex_instruction_is_using_rs2){
-       execute.io.reg2 := writeBack.io.dataToReg
-   }
 }
 
