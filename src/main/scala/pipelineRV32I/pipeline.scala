@@ -8,7 +8,7 @@ class rv32Ipipeline(program: Seq[UInt]) extends Module(){
        val addrOutPipeline = Output(UInt(32.W))
        val dataOutPipeline = Output(UInt(32.W))
        val dataInPipeline  = Input(UInt(32.W))
-       val WE              = Output(UInt(32.W))
+       val WE              = Output(Bool())
    })
 
    val instruction_fetch  = Module(new rv32IF())
@@ -102,6 +102,6 @@ class rv32Ipipeline(program: Seq[UInt]) extends Module(){
    write_back.io.dataIn  := mem_wb_lmd_reg
    write_back.io.NPCIn   := mem_wb_NPC_reg
 
-   io.res := execute.io.res
+   io.res := instruction_fetch.io.PCOut
 }
 

@@ -13,7 +13,7 @@ class rv32MEM() extends Module(){
        val addrOutPipeline = Output(UInt(32.W))
        val dataOutPipeline = Output(UInt(32.W))
        val dataInPipeline  = Input(UInt(32.W))
-       val WE              = Output(UInt(32.W))
+       val WE              = Output(Bool())
    })
 
    io.WE := false.B
