@@ -13,10 +13,10 @@ class rv32Ipipeline(program: Seq[UInt]) extends Module(){
    val registers          = Module(new RegistryFile())
    val execute            = Module(new rv32EX())
    val mem                = Module(new rv32MEM()) 
-   val write_back         = Module(new rv32WB())     
+   val write_back         = Module(new rv32WB()) 
+   val forwarding_unit    = Module(new ForwardingUnit())    
 
-   val stall = Wire(Bool())
-   
+    
 
 
    //IF_ID_registers
@@ -35,6 +35,8 @@ class rv32Ipipeline(program: Seq[UInt]) extends Module(){
    val id_ex_funct_reg     = RegInit(0.U(10.W))
    val id_ex_A_reg         = RegInit(0.U(32.W))
    val id_ex_B_reg         = RegInit(0.U(32.W))
+   val id_ex_reg1_reg      = RegInit(0.U(32.W))
+   val id_ex_reg2_reg      = RegInit(0.U(32.W))
 
    id_ex_NPC_reg       := if_id_NPC_reg
    id_ex_IR_reg        := if_id_IR_reg
@@ -42,6 +44,8 @@ class rv32Ipipeline(program: Seq[UInt]) extends Module(){
    id_ex_funct_reg     := instruction_decode.io.funct
    id_ex_A_reg         := registers.io.regOut1
    id_ex_B_reg         := registers.io.regOut2
+   id_ex_reg1_reg      := instruction_decode.io.reg1
+   id_ex_reg2_reg      := instruction_decode.io.reg2
  
    //ex_mem registers
    val ex_mem_NPC_reg       = RegInit(0.U(32.W))
@@ -83,8 +87,6 @@ class rv32Ipipeline(program: Seq[UInt]) extends Module(){
    registers.io.reg2Selector  := instruction_decode.io.reg2
 
    execute.io.funct     := id_ex_funct_reg
-   execute.io.reg1      := id_ex_A_reg
-   execute.io.reg2      := id_ex_B_reg
    execute.io.immidiate := id_ex_immidiate_reg
    execute.io.NPCIn     := id_ex_NPC_reg
    execute.io.instrIn   := id_ex_IR_reg
@@ -97,6 +99,28 @@ class rv32Ipipeline(program: Seq[UInt]) extends Module(){
    write_back.io.res     := mem_wb_res_reg
    write_back.io.dataIn  := mem_wb_lmd_reg
    write_back.io.NPCIn   := mem_wb_NPC_reg
+
+   forwarding_unit.io.reg1        := id_ex_reg1_reg
+   forwarding_unit.io.reg2        := id_ex_reg2_reg
+   forwarding_unit.io.ex_mem_inst := ex_mem_IR_reg
+   forwarding_unit.io.mem_wb_inst := mem_wb_IR_reg
+
+
+   when(forwarding_unit.io.forward_A === "b10".U){
+      execute.io.reg1 := ex_mem_res_reg
+   }.elsewhen(forwarding_unit.io.forward_A === "b01".U){
+      execute.io.reg1 := write_back.io.dataToReg
+   }.otherwise{
+      execute.io.reg1 := id_ex_A_reg
+   }
+
+   when(forwarding_unit.io.forward_B === "b10".U){
+      execute.io.reg2 := ex_mem_res_reg
+   }.elsewhen(forwarding_unit.io.forward_B === "b01".U){
+      execute.io.reg2 := write_back.io.dataToReg
+   }.otherwise{
+      execute.io.reg2 := id_ex_B_reg
+   }
 
    io.res := execute.io.res
 }

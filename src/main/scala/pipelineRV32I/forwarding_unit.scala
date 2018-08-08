@@ -18,7 +18,7 @@ class ForwardingUnit() extends Module(){
    ex_mem_inst_rd := false.B
 
    when((io.ex_mem_inst(6,0) === OPCODE_LUI) || (io.ex_mem_inst(6,0) === OPCODE_AUIPC) || (io.ex_mem_inst(6,0) === OPCODE_JAL) || (io.ex_mem_inst(6,0) === OPCODE_JALR)
-                        || (io.ex_mem_inst(6,0) === OPCODE_LOAD) ||  (io.ex_mem_inst(6,0) === OPCODE_I_TYPE) || (io.ex_mem_inst(6,0) === OPCODE_R_TYPE)){
+                        ||   (io.ex_mem_inst(6,0) === OPCODE_I_TYPE) || (io.ex_mem_inst(6,0) === OPCODE_R_TYPE)){
 
       ex_mem_inst_rd := true.B
    }
