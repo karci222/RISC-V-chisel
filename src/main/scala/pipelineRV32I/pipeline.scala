@@ -38,6 +38,8 @@ class rv32Ipipeline(program: Seq[UInt]) extends Module(){
    val id_ex_funct_reg     = RegInit(0.U(10.W))
    val id_ex_A_reg         = RegInit(0.U(32.W))
    val id_ex_B_reg         = RegInit(0.U(32.W))
+   val id_ex_reg1          = RegInit(0.U(5.W))
+   val id_ex_reg2          = RegInit(0.U(5.W))
    
    id_ex_NPC_reg       := if_id_NPC_reg
    id_ex_IR_reg        := if_id_IR_reg
@@ -45,7 +47,9 @@ class rv32Ipipeline(program: Seq[UInt]) extends Module(){
    id_ex_funct_reg     := instruction_decode.io.funct
    id_ex_A_reg         := registers.io.regOut1
    id_ex_B_reg         := registers.io.regOut2
- 
+   id_ex_reg1          := instruction_decode.io.reg1
+   id_ex_reg2          := instruction_decode.io.reg2
+
    //ex_mem registers
    val ex_mem_NPC_reg       = RegInit(0.U(32.W))
    val ex_mem_IR_reg        = RegInit(0.U(32.W))
@@ -106,11 +110,8 @@ class rv32Ipipeline(program: Seq[UInt]) extends Module(){
 
    io.res := instruction_fetch.io.PCOut
 
-   val id_ex_reg1      = WireInit(0.U(5.W))
-   val id_ex_reg2      = WireInit(0.U(5.W))
    
-   id_ex_reg1 := id_ex_IR_reg(19,15)
-   id_ex_reg2 := id_ex_IR_reg(24,20)
+   
   
    //forwarding part
    forwarding_unit.io.reg1        := id_ex_reg1
