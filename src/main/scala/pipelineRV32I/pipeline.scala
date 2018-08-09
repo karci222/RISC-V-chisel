@@ -14,7 +14,7 @@ class rv32Ipipeline(program: Seq[UInt]) extends Module(){
    val execute            = Module(new rv32EX())
    val mem                = Module(new rv32MEM()) 
    val write_back         = Module(new rv32WB()) 
-   val forwarding_unit    = Module(new ForwardingUnit())    
+   val forwarding_unit    = Module(new ForwardingUnit())
 
     
 
@@ -105,6 +105,7 @@ class rv32Ipipeline(program: Seq[UInt]) extends Module(){
    forwarding_unit.io.ex_mem_inst := ex_mem_IR_reg
    forwarding_unit.io.mem_wb_inst := mem_wb_IR_reg
 
+   
 
    when(forwarding_unit.io.forward_A === "b10".U){
       execute.io.reg1 := ex_mem_res_reg
