@@ -34,17 +34,13 @@ class rv32Ipipeline(program: Seq[UInt]) extends Module(){
    val id_ex_funct_reg     = RegInit(0.U(10.W))
    val id_ex_A_reg         = RegInit(0.U(32.W))
    val id_ex_B_reg         = RegInit(0.U(32.W))
-   val id_ex_reg1_reg      = RegInit(0.U(32.W))
-   val id_ex_reg2_reg      = RegInit(0.U(32.W))
-
+   
    id_ex_NPC_reg       := if_id_NPC_reg
    id_ex_IR_reg        := if_id_IR_reg
    id_ex_immidiate_reg := instruction_decode.io.immidiate
    id_ex_funct_reg     := instruction_decode.io.funct
    id_ex_A_reg         := registers.io.regOut1
    id_ex_B_reg         := registers.io.regOut2
-   id_ex_reg1_reg      := instruction_decode.io.reg1
-   id_ex_reg2_reg      := instruction_decode.io.reg2
  
    //ex_mem registers
    val ex_mem_NPC_reg       = RegInit(0.U(32.W))
@@ -101,9 +97,15 @@ class rv32Ipipeline(program: Seq[UInt]) extends Module(){
    write_back.io.NPCIn   := mem_wb_NPC_reg
 
 
+   val id_ex_reg1      = WireInit(0.U(5.W))
+   val id_ex_reg2      = WireInit(0.U(5.W))
+   
+   id_ex_reg1 := id_ex_IR_reg(19,15)
+   id_ex_reg2 := id_ex_IR_reg(24,20)
+  
    //forwarding part
-   forwarding_unit.io.reg1        := id_ex_reg1_reg
-   forwarding_unit.io.reg2        := id_ex_reg2_reg
+   forwarding_unit.io.reg1        := id_ex_reg1
+   forwarding_unit.io.reg2        := id_ex_reg2
    forwarding_unit.io.ex_mem_inst := ex_mem_IR_reg
    forwarding_unit.io.mem_wb_inst := mem_wb_IR_reg
 
@@ -132,7 +134,8 @@ class rv32Ipipeline(program: Seq[UInt]) extends Module(){
    hazard_detection_unit.io.if_id_instr := if_id_IR_reg
    
    when(hazard_detection_unit.io.stall){
-      if_id_IR_reg := "b00000000000000000000000000010011".asUInt(32.W)
+      if_id_IR_reg := if_id_IR_reg
+      id_ex_IR_reg := "b00000000000000000000000000010011".asUInt(32.W)
    }
 
    io.res := execute.io.res

@@ -12,6 +12,7 @@ class ForwardingUnit() extends Module(){
       val forward_A = Output(UInt(2.W))
       val forward_B = Output(UInt(2.W))
    })
+
  
    val ex_mem_inst_rd = Wire(Bool())
    
