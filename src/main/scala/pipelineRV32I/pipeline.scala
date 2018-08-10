@@ -36,8 +36,6 @@ class rv32Ipipeline(program: Seq[UInt]) extends Module(){
    val id_ex_IR_reg        = RegInit(0.U(32.W))
    val id_ex_immidiate_reg = RegInit(0.U(32.W))
    val id_ex_funct_reg     = RegInit(0.U(10.W))
-   val id_ex_A_reg         = RegInit(0.U(32.W))
-   val id_ex_B_reg         = RegInit(0.U(32.W))
    val id_ex_reg1          = RegInit(0.U(5.W))
    val id_ex_reg2          = RegInit(0.U(5.W))
    
@@ -45,8 +43,6 @@ class rv32Ipipeline(program: Seq[UInt]) extends Module(){
    id_ex_IR_reg        := if_id_IR_reg
    id_ex_immidiate_reg := instruction_decode.io.immidiate
    id_ex_funct_reg     := instruction_decode.io.funct
-   id_ex_A_reg         := registers.io.regOut1
-   id_ex_B_reg         := registers.io.regOut2
    id_ex_reg1          := instruction_decode.io.reg1
    id_ex_reg2          := instruction_decode.io.reg2
 
@@ -61,7 +57,7 @@ class rv32Ipipeline(program: Seq[UInt]) extends Module(){
    ex_mem_IR_reg        := id_ex_IR_reg
    ex_mem_condition_reg := execute.io.cond
    ex_mem_res_reg       := execute.io.res
-   ex_mem_B_reg         := id_ex_B_reg
+   ex_mem_B_reg         := execute.io.reg2Out
 
    //mem_wb registers
    val mem_wb_NPC_reg       = RegInit(0.U(32.W))
@@ -87,8 +83,8 @@ class rv32Ipipeline(program: Seq[UInt]) extends Module(){
    registers.io.regIn         := write_back.io.dataToReg
    registers.io.regInSelector := write_back.io.regInSelector
    registers.io.writeEn       := write_back.io.writeRegister
-   registers.io.reg1Selector  := instruction_decode.io.reg1
-   registers.io.reg2Selector  := instruction_decode.io.reg2
+   registers.io.reg1Selector  := id_ex_reg1
+   registers.io.reg2Selector  := id_ex_reg2
 
    execute.io.funct     := id_ex_funct_reg
    execute.io.immidiate := id_ex_immidiate_reg
@@ -109,9 +105,6 @@ class rv32Ipipeline(program: Seq[UInt]) extends Module(){
    write_back.io.NPCIn   := mem_wb_NPC_reg
 
    io.res := instruction_fetch.io.PCOut
-
-   
-   
   
    //forwarding part
    forwarding_unit.io.reg1        := id_ex_reg1
@@ -124,7 +117,7 @@ class rv32Ipipeline(program: Seq[UInt]) extends Module(){
    }.elsewhen(forwarding_unit.io.forward_A === "b01".U){
       execute.io.reg1 := write_back.io.dataToReg
    }.otherwise{
-      execute.io.reg1 := id_ex_A_reg
+      execute.io.reg1 := registers.io.regOut1
    }
 
    when(forwarding_unit.io.forward_B === "b10".U){
@@ -132,11 +125,11 @@ class rv32Ipipeline(program: Seq[UInt]) extends Module(){
    }.elsewhen(forwarding_unit.io.forward_B === "b01".U){
       execute.io.reg2 := write_back.io.dataToReg
    }.otherwise{
-      execute.io.reg2 := id_ex_B_reg
+      execute.io.reg2 := registers.io.regOut2
    }
 
    //this can be solved outside the forwarding unit  - fast forwarding between load and store instruction
-   when((ex_mem_IR_reg(6,0) === OPCODE_STORE && mem_wb_IR_reg(6,0) === OPCODE_LOAD) && (ex_mem_IR_reg(11,7) === mem_wb_IR_reg(24,20))){
+   when((ex_mem_IR_reg(6,0) === OPCODE_STORE && mem_wb_IR_reg(6,0) === OPCODE_LOAD) && (mem_wb_IR_reg(11,7) === ex_mem_IR_reg(24,20))){
       mem.io.dataIn := mem_wb_lmd_reg
    }
 

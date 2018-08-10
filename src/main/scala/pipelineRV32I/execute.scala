@@ -13,6 +13,7 @@ class rv32EX() extends Module(){
        val immidiate    = Input(UInt(32.W))
        val NPCIn        = Input(UInt(32.W))
        val instrIn      = Input(UInt(32.W))
+       val reg2Out      = Output(UInt(32.W))
    })
 
    val alu  = Module(new ALU32())
@@ -72,6 +73,8 @@ class rv32EX() extends Module(){
        useNPCIn     := true.B
    }
 
+   io.reg2Out := io.reg2
+   
    val muxA = Mux(useNPCIn, io.NPCIn, io.reg1)
    val muxB = Mux(useImmidiate, io.immidiate, io.reg2)
    

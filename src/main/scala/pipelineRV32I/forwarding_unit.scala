@@ -3,10 +3,14 @@ package pipelineRV32I
 import chisel3._
 import isRV32.Instructions._
 
+/*
+  Forwarding unit responsible for forwarding ex/mem or mem/wb outputs
+*/
+
 class ForwardingUnit() extends Module(){
    val io = IO(new Bundle{
       val reg1 = Input(UInt(5.W))
-      val reg2 = Input(UInt(5.W))
+      val reg2 = Input(UInt(5.W))//This output does not change when connected to the pipeline. In tests works properly
       val ex_mem_inst = Input(UInt(32.W))
       val mem_wb_inst = Input(UInt(32.W))
       val forward_A = Output(UInt(2.W))
@@ -41,6 +45,8 @@ class ForwardingUnit() extends Module(){
      io.forward_A := "b00".U
    }
 
+
+   //usage of the faulty input.
    when(ex_mem_inst_rd && (io.ex_mem_inst(11,7) === io.reg2) && io.reg2 =/= 0.U){
      io.forward_B := "b10".U
    }.elsewhen(mem_wb_inst_rd && (io.mem_wb_inst(11,7) === io.reg2) && io.reg2 =/= 0.U){
