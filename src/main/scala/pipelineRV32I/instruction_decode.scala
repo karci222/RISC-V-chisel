@@ -5,6 +5,10 @@ import chisel3._
 import chisel3.util._
 import isRV32.Instructions._
 
+/*
+   Instruction decode stage of the pipeline
+*/
+
 class rv32ID() extends Module(){
    val io = IO(new Bundle{
        val reg1      = Output(UInt(5.W))
@@ -13,21 +17,29 @@ class rv32ID() extends Module(){
        val funct     = Output(UInt(10.W))
        val instrIn   = Input(UInt(32.W))
    })
-
+   
+   //sets register 1 and register 2 selectors
    io.reg1 := io.instrIn(19, 15)
    io.reg2 := io.instrIn(24, 20)   
 
+   //sets functions for the ALU
    val funct7     = io.instrIn(31, 25)
    val funct3     = io.instrIn(14, 12)
    val funct_temp = Cat(funct7, funct3) 
    
+   
    io.funct := 0.U
    io.immidiate := 0.U
+
+   //used for sign extension
    val immidiate_temp = Wire(SInt(32.W))
    immidiate_temp := 0.asSInt
+
+   //used for LUI and AUIPC - zeros in the lower 12 bits
    val zeros12 = Wire(UInt(12.W))
    zeros12 := 0.asUInt
-  
+   
+   //depending on the opcode constructs functions and immidiates
    when(io.instrIn(6, 0) === OPCODE_R_TYPE){
        io.immidiate := 0.U
        io.funct := funct_temp

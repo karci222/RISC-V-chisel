@@ -3,6 +3,12 @@ package pipelineRV32I
 import chisel3._
 import isRV32.Instructions._
 
+
+/*
+   Memory stage of the pipeline.
+   Only sets the write enabled and forwards data either out of pipeline or to the next stage
+*/
+
 class rv32MEM() extends Module(){
    val io = IO(new Bundle {
        val addrIn  = Input(UInt(32.W))

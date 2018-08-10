@@ -2,6 +2,11 @@ package pipelineRV32I
 
 import chisel3._
 
+/*
+   Arithmetic logic unit of the processor
+   Input and output sizes are both 32 bits
+   Function is long 10 bits
+*/
 
 class ALU32() extends Module(){
    val io = IO(new Bundle{
@@ -9,14 +14,12 @@ class ALU32() extends Module(){
       val A     = Input(UInt(32.W))
       val B     = Input(UInt(32.W))
       val res   = Output(UInt(32.W))
-      //flags needed to be added
    })
    
-  
    val A = io.A
    val B = io.B
 
-
+   //temporary results
    val resTemp1 = WireInit(0.U(32.W))
    val resTemp2 = WireInit(0.U(32.W))
    val resTemp3 = WireInit(0.U(32.W))
@@ -28,6 +31,7 @@ class ALU32() extends Module(){
    val resTemp9 = WireInit(0.U(32.W))
    val resTemp10 = WireInit(0.U(32.W))
 
+   //Computes all of the operations in parallel
    resTemp1 := A+B
    resTemp2 := A-B
    resTemp3 := A << B(4, 0)
@@ -39,6 +43,7 @@ class ALU32() extends Module(){
    resTemp9 := A | B
    resTemp10 := A & B
 
+   //selects only one output
    when(io.funct === "b0000000000".U){
      //performs addition
      io.res := resTemp1
@@ -70,6 +75,7 @@ class ALU32() extends Module(){
      //AND
      io.res := resTemp10
    }.otherwise{
+     //this situation probably should not occur considering the instruction decode phase works correctly!
      io.res := 0.U
    }
    

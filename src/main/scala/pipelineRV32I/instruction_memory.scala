@@ -5,6 +5,10 @@ import chisel3._
 import chisel3.util._
 import chisel3.iotesters._
 
+/*
+   This file contains data memory and instruction ROM
+*/
+
 class DataMemory(n: Int = 1024) extends Module(){
     val io = IO(new Bundle{
        val addrIn  = Input(UInt(32.W))
@@ -23,6 +27,8 @@ class DataMemory(n: Int = 1024) extends Module(){
     io.dataOut := syncMem(io.addrIn)
 }
 
+
+//ROM is constructed using a vector
 class InstructionRom(program: Seq[UInt]) extends Module(){
     val io = IO(new Bundle{
        val addrIn  = Input(UInt(32.W))
