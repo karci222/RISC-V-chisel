@@ -5,6 +5,8 @@ import chisel3.util._
 import chisel3.iotesters._
 
 class IDTest(dut: rv32ID) extends PeekPokeTester(dut){
+  poke(dut.io.NPCIn, 0.U)
+
   //alu instruction
   poke(dut.io.instrIn, "h_40415533".U)
   expect(dut.io.reg2, "h_4".U)
@@ -44,10 +46,12 @@ class IDTest(dut: rv32ID) extends PeekPokeTester(dut){
 
   //branch instruction test
   poke(dut.io.instrIn, "b10010110001000001001001011100011".asUInt(32.W))
+  poke(dut.io.NPCIn, 1692.U)
   expect(dut.io.reg1, 1)
   expect(dut.io.reg2, 2)
   expect(dut.io.immidiate, "h_FFFF_F964".U)
   expect(dut.io.funct, 0.U)
+  expect(dut.io.NPCOut, 0.U)
   step(1)  
 
   //LUI test
@@ -65,8 +69,10 @@ class IDTest(dut: rv32ID) extends PeekPokeTester(dut){
 
   //JAL test
   poke(dut.io.instrIn, "b01100001011111100000101101101111".asUInt(32.W))
+  poke(dut.io.NPCIn, 32.U)
   expect(dut.io.immidiate, 921110.U)
   expect(dut.io.funct, 0.U)
+  expect(dut.io.NPCOut, 921142.U)
   step(1)
 
   //JALR test

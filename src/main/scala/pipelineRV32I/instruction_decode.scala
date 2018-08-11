@@ -16,7 +16,11 @@ class rv32ID() extends Module(){
        val immidiate = Output(UInt(32.W))
        val funct     = Output(UInt(10.W))
        val instrIn   = Input(UInt(32.W))
+       val NPCIn     = Input(UInt(32.W))
+       val NPCOut    = Output(UInt(32.W))
    })
+   
+   io.NPCOut := io.NPCIn
    
    //sets register 1 and register 2 selectors
    io.reg1 := io.instrIn(19, 15)
@@ -63,10 +67,12 @@ class rv32ID() extends Module(){
    }.elsewhen(io.instrIn(6,0) === OPCODE_B_TYPE){
        io.funct := 0.U
        immidiate_temp := (Cat(io.instrIn(31), io.instrIn(7), io.instrIn(30, 25), io.instrIn(11,8), 0.U).asSInt)
+       io.NPCOut := (io.NPCIn.asSInt + immidiate_temp).asUInt
        io.immidiate := immidiate_temp.asUInt
    }.elsewhen(io.instrIn(6,0) === OPCODE_JAL){
        io.funct := 0.U
        immidiate_temp := (Cat(io.instrIn(31), io.instrIn(19, 12), io.instrIn(20), io.instrIn(30, 21), 0.U).asSInt)
+       io.NPCOut := (io.NPCIn.asSInt + immidiate_temp).asUInt
        io.immidiate := immidiate_temp.asUInt
    }.elsewhen(io.instrIn(6,0) === OPCODE_JALR){
        io.funct := 0.U

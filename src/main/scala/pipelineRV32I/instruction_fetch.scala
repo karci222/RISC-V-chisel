@@ -9,12 +9,14 @@ import isRV32.Instructions._
 */
 class rv32IF() extends Module(){
    val io = IO(new Bundle{
-      val NPCOut 	 = Output(UInt(32.W))
-      val PCOut 	 = Output(UInt(32.W))
-      val condIn 	 = Input(Bool())
-      val nextPC         = Input(UInt(32.W))
-      val instrIn        = Input(UInt(32.W))
-      val stall          = Input(Bool())
+      val NPCOut   = Output(UInt(32.W))
+      val PCOut    = Output(UInt(32.W))
+      val condIn   = Input(Bool())
+      val nextPC   = Input(UInt(32.W))
+      val nextPC2  = Input(UInt(32.W))//for JALR
+      val instrIn  = Input(UInt(32.W))
+      val instrIn2 = Input(UInt(32.W))//for JALR
+      val stall    = Input(Bool())
    })
    
    //program counter register and next PC
@@ -22,8 +24,10 @@ class rv32IF() extends Module(){
    val NPC = Wire(UInt(32.W))
 
    //on jumps and branches directly change the NPC, on stall PC should be the same, otherwise increment PC by 4
-   when((io.condIn === true.B && io.instrIn(6,0) === OPCODE_B_TYPE) || (io.instrIn(6,0) === OPCODE_JAL || io.instrIn(6,0) === OPCODE_JALR)){
+   when((io.condIn === true.B && io.instrIn(6,0) === OPCODE_B_TYPE) || (io.instrIn(6,0) === OPCODE_JAL )){
      NPC := io.nextPC
+   }.elsewhen(io.instrIn2(6,0) === OPCODE_JALR){
+     NPC := io.nextPC2
    }.elsewhen(io.stall){
      NPC := PCReg
    }.otherwise{

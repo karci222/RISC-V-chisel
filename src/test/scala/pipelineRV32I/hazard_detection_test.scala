@@ -28,6 +28,35 @@ class HazarDetectionUnitTest(dut: HazardDetectionUnit) extends PeekPokeTester(du
    poke(dut.io.if_id_instr, "b00000000100101000000001100110011".asUInt(32.W))
    expect(dut.io.stall, false.B)
    step(1)
+
+   //control hazard on branch
+   poke(dut.io.if_id_instr, "b11111110001100001100110011100011".asUInt(32.W))
+   poke(dut.io.id_ex_instr, "b00000000000000000000000000010011".asUInt(32.W))
+   expect(dut.io.stall, true.B)
+   step(1)
+
+   //control hazard on jump
+   poke(dut.io.if_id_instr, "b00000010010000000000001001101111".asUInt(32.W))
+   poke(dut.io.id_ex_instr, "h_13".U)
+   expect(dut.io.stall, true.B)
+   step(1)
+
+   //control hazard due to JALR
+   poke(dut.io.if_id_instr, "b00000001100000000000001011100111".asUInt(32.W))
+   poke(dut.io.id_ex_instr, "h_13".U)
+   expect(dut.io.stall, true.B)
+   step(1)
+   poke(dut.io.if_id_instr, "h_13".U)
+   poke(dut.io.id_ex_instr, "b00000001100000000000001011100111".asUInt(32.W))
+   expect(dut.io.stall, true.B)
+   step(1)
+
+   //not a control hazard - branch is in the execute stage
+   poke(dut.io.if_id_instr, "h_13".U)
+   poke(dut.io.id_ex_instr, "b11111110001100001100110011100011".asUInt(32.W))
+   expect(dut.io.stall, false.B)
+   step(1)
+
 }
 
 object HazardDetectionUnitTestMain extends App {
