@@ -33,6 +33,7 @@ class rv32Ipipeline(program: Seq[UInt]) extends Module(){
 
    if_id_NPC_reg := instruction_fetch.io.NPCOut
    if_id_IR_reg  := instruction_memory.io.dataOut
+   
 
    //ID_EX_registers
    val id_ex_NPC_reg       = RegInit(0.U(32.W))
@@ -44,7 +45,7 @@ class rv32Ipipeline(program: Seq[UInt]) extends Module(){
    
    //registers are actaully read in the stage EX because the write from the write back writes the data in the end of the cycle and because of this we would have longer data hazard
    //I am not sure if this is the most correct way to do it and if it is not a wrong workaround.
-   id_ex_NPC_reg       := if_id_NPC_reg
+   id_ex_NPC_reg       := instruction_decode.io.NPCOut
    id_ex_IR_reg        := if_id_IR_reg
    id_ex_immidiate_reg := instruction_decode.io.immidiate
    id_ex_funct_reg     := instruction_decode.io.funct
@@ -79,13 +80,20 @@ class rv32Ipipeline(program: Seq[UInt]) extends Module(){
    instruction_memory.io.addrIn := instruction_fetch.io.PCOut >> 2
 
    //instruction fetch stage inputs
-   instruction_fetch.io.condIn 	:= ex_mem_condition_reg
-   instruction_fetch.io.nextPC  := ex_mem_res_reg
-   instruction_fetch.io.instrIn := ex_mem_IR_reg
-   instruction_fetch.io.stall   := hazard_detection_unit.io.stall
+   instruction_fetch.io.condIn 	 := execute.io.cond
+   instruction_fetch.io.nextPC   := id_ex_NPC_reg
+   instruction_fetch.io.instrIn  := id_ex_IR_reg
+   instruction_fetch.io.stall    := hazard_detection_unit.io.stall
+   //for JALR
+   instruction_fetch.io.nextPC2  := ex_mem_res_reg
+   instruction_fetch.io.instrIn2 := ex_mem_IR_reg
+   //for JAL
+   instruction_fetch.io.instrIn3 := if_id_IR_reg
+   instruction_fetch.io.nextPC3  := instruction_decode.io.NPCOut
    
    //instruction decode stage inputs, register-register transfers are done in the part where I instantiate registers
    instruction_decode.io.instrIn := if_id_IR_reg
+   instruction_decode.io.NPCIn   := if_id_NPC_reg
 
    //register file inputs
    registers.io.regIn         := write_back.io.dataToReg
@@ -157,6 +165,29 @@ class rv32Ipipeline(program: Seq[UInt]) extends Module(){
    //forwards only NOP instruction (ADDI x0 x0 0)
    when(hazard_detection_unit.io.stall){
       if_id_IR_reg := if_id_IR_reg
+      id_ex_IR_reg := "b00000000000000000000000000010011".asUInt(32.W)
+   }
+   
+   //predict untaken branch - if branch predicted, then fetch from this destination and discard the instruction after that
+   when((id_ex_IR_reg(6,0) === OPCODE_B_TYPE) && execute.io.cond){
+      instruction_memory.io.addrIn := id_ex_NPC_reg >> 2
+      id_ex_IR_reg := "b00000000000000000000000000010011".asUInt(32.W)
+   }
+   
+   //jump resolution already at ID stage
+   when(if_id_IR_reg(6,0) === OPCODE_JAL){
+      instruction_memory.io.addrIn := instruction_decode.io.NPCOut >> 2
+   }
+
+   //when JALR - two stalls since it also needs to link register
+   //stall 1 - at ID_EX 
+   when(id_ex_IR_reg(6,0) === OPCODE_JALR){
+      id_ex_IR_reg := "b00000000000000000000000000010011".asUInt(32.W)
+   }
+   
+   //stall 2 - at EX_MEM
+   when(ex_mem_IR_reg(6,0) === OPCODE_JALR){
+      instruction_memory.io.addrIn := ex_mem_res_reg >> 2
       id_ex_IR_reg := "b00000000000000000000000000010011".asUInt(32.W)
    }
 }

@@ -47,13 +47,7 @@ class HazardDetectionUnit() extends Module(){
       io.stall := true.B
    }.elsewhen((id_ex_rd) && (if_id_rs2) && (io.id_ex_instr(11,7) === io.if_id_instr(24,20))){
       io.stall := true.B
-   }
-   //resolves control hazards
-   .elsewhen(io.if_id_instr(6,0) === OPCODE_B_TYPE || io.if_id_instr(6,0) === OPCODE_JAL || io.if_id_instr(6,0) === OPCODE_JALR){
-       io.stall := true.B
-    }.elsewhen(io.id_ex_instr(6,0) === OPCODE_JALR){
-       io.stall := true.B
-    }.otherwise{
+   }.otherwise{
       io.stall := false.B
-   }
+    }
 }

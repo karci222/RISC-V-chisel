@@ -53,7 +53,7 @@ class PipelineTest1(dut: PipelineTop) extends PeekPokeTester(dut){
 
 //empty test that just runs a program
 class PipelineTest2(dut: PipelineTop) extends PeekPokeTester(dut){
-  step(20000)
+  step(1000)
 }
 
 object PipelineTest1Main extends App {
