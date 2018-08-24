@@ -28,7 +28,7 @@ class RegistryFile() extends Module(){
    io.regOut2 := registers(io.reg2Selector)
    
    //writes to the selecting register
-   when(io.writeEn){
+   when(io.writeEn && io.regInSelector =/= 0.U){
       registers(io.regInSelector) := io.regIn
    }
 }

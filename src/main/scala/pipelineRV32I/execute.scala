@@ -29,8 +29,7 @@ class rv32EX() extends Module(){
  
    useImmidiate := false.B
    useNPCIn     := false.B
-   io.cond := false.B
-
+   io.cond      := false.B
 
    //instructions which are using immidiate operands only
    when(io.instrIn(6,0) === OPCODE_I_TYPE || io.instrIn(6,0) === OPCODE_STORE || io.instrIn(6,0) === OPCODE_LOAD || io.instrIn(6,0) === OPCODE_LUI ||

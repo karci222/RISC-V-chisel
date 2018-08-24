@@ -29,6 +29,19 @@ class rv32MEM() extends Module(){
    io.dataOut         := io.dataInPipeline
 
    when(io.instrIn(6,0) === OPCODE_STORE){
+     //SB
+     when(io.instrIn(14,12) === "b000".U){
+       io.dataOutPipeline := io.dataIn & "h_ff".U
+     }
+     //SH
+     .elsewhen(io.instrIn(14,12) === "b001".U){
+       io.dataOutPipeline := io.dataIn & "h_ffff".U
+     }
+     //SW
+     .elsewhen(io.instrIn(14,12) === "b010".U){
+       io.dataOutPipeline := io.dataIn
+     }
+
      io.WE := true.B
    }
 }

@@ -37,7 +37,29 @@ class rv32WB() extends Module(){
       io.dataToReg := io.res
    }.elsewhen(io.instrIn(6,0) === OPCODE_JAL || io.instrIn(6,0) === OPCODE_JALR){
       io.dataToReg := io.NPCIn
+   }.elsewhen(io.instrIn(6,0) === OPCODE_LOAD){
+      io.dataToReg := 0.U
+      //LB
+      when(io.instrIn(14,12) === "b000".U){
+         io.dataToReg := ((io.dataIn & "h_ff".U).asSInt).asUInt
+      }
+      //LH
+      .elsewhen(io.instrIn(14,12) === "b001".U){
+         io.dataToReg := ((io.dataIn & "h_ffff".U).asSInt).asUInt
+      }
+      //LW
+      .elsewhen(io.instrIn(14,12) === "b010".U){
+         io.dataToReg := io.dataIn
+      }
+      //LBU
+      .elsewhen(io.instrIn(14,12) === "b100".U){
+         io.dataToReg := io.dataIn & "h_ff".U
+      }
+      //LHU
+      .elsewhen(io.instrIn(14,12) === "b101".U){
+         io.dataToReg := io.dataIn & "h_ffff".U
+      }
    }.otherwise{
-      io.dataToReg := io.dataIn
+      io.dataToReg := 0.U
    }
 }
