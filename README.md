@@ -1,4 +1,8 @@
-# RISC-V pipeline built in Chisel
+<p align="center">
+  <img width="460" height="300" src="Spectreredesign.jpg">
+</p>
+# Spectre a RISC-V based processor.
+
 
 This project is a result of a special course at the Technical University of Denmark
 
